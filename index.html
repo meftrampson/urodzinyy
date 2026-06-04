@@ -218,6 +218,7 @@
         <h2>Urodzinowy Quiz! 🥳</h2>
         <section class="quiz-container">
             
+            
             <form id="quiz-form" action="https://formspree.io/f/xykayjwv" method="POST" style="display:none;">
                 <input type="text" name="Randka" id="input-randka">
                 <input type="text" name="Godzina" id="input-godzina">
@@ -225,16 +226,26 @@
             </form>
 
             <div id="quiz-body">
+               
                 <div class="question active" id="q1">
                     <p>1. Gdzie idziemy na naszą urodzinową randkę?</p>
-                    <div class="answers-grid">
+                    <div class="answers-grid" id="q1-options">
                         <button type="button" class="btn-answer" onclick="selectAnswer(this, 1, 'Sushi')">Sushi 🍣</button>
                         <button type="button" class="btn-answer" onclick="selectAnswer(this, 1, 'Pizza')">Pizza 🍕</button>
                         <button type="button" class="btn-answer" onclick="selectAnswer(this, 1, 'Burger')">Burger 🍔</button>
                         <button type="button" class="btn-answer" onclick="selectAnswer(this, 1, 'Makro')">Makro 🛒</button>
+                        
+                        <button type="button" class="btn-answer" style="grid-column: span 1; border-style: dashed;" onclick="showCustomInput()">Własna odpowiedź... ✏️</button>
+                    </div>
+
+                    
+                    <div id="custom-input-container" style="display: none; margin-top: 15px;">
+                        <input type="text" id="custom-date-place" placeholder="Wpisz miejsce..." style="width: 100%; padding: 15px; border: 2px solid var(--secondary-color); border-radius: 10px; font-size: 1rem; outline: none; margin-bottom: 15px;">
+                        <button type="button" class="btn-answer" style="background-color: var(--primary-color); color: white; width: 100%;" onclick="submitCustomAnswer()">Zatwierdź miejsce 💖</button>
                     </div>
                 </div>
 
+                <!-- Pytanie 2 -->
                 <div class="question" id="q2">
                     <p>2. O której godzinie Cię zgarniam?</p>
                     <div class="answers-grid hours-grid">
@@ -248,10 +259,11 @@
                     </div>
                 </div>
 
+                <!-- Pytanie 3 -->
                 <div class="question" id="q3">
                     <p>3. Najważniejsze pytanie: czy mnie kochasz?</p>
                     <div class="answers-grid">
-                        <button type="button" class="btn-answer" onclick="selectAnswer(this, 3, 'Tak')">Takkkk! ❤️</button>
+                        <button type="button" class="btn-answer" onclick="selectAnswer(this, 3, 'Tak')">Takkkkkk! ❤️</button>
                         <button type="button" class="btn-answer" onclick="selectAnswer(this, 3, 'Nie')">Nie 💔</button>
                     </div>
                 </div>
@@ -259,10 +271,11 @@
                 <div id="loading-status" class="loading-text" style="display: none;">Wysyłam Twoje odpowiedzi do Matiego... 💕</div>
             </div>
 
+            <
             <div id="quiz-result">
                 <p>Odpowiedzi zapisane! 📝</p>
                 <p style="font-size: 1.1rem; font-weight: normal; margin-top: 10px;">
-                    Wszystko zaplanowane! Dostałem już powiadomienie z Twoimi odpowiedziami. Szykuj się na super wieczór! Data: 10.06.2026 + prezent 🥰🎂
+                    Wszystko zaplanowane! Dostałem już powiadomienie z Twoimi odpowiedziami. Szykuj się na super wieczór! Data: 10.06.2026 + Prezent 🥰🎂
                 </p>
             </div>
         </section>
@@ -285,16 +298,41 @@
         <p>Stworzone z miłością przez Twojego chłopaka <span class="heart-icon">♥</span></p>
     </footer>
 
+    <!-- --- SKRYPT JAVASCRIPT --- -->
     <script>
+        
+        function showCustomInput() {
+            document.getElementById('q1-options').style.display = 'none';
+            document.getElementById('custom-input-container').style.display = 'block';
+        }
+
+        
+        function submitCustomAnswer() {
+            const typedAnswer = document.getElementById('custom-date-place').value.trim();
+            
+            
+            if (typedAnswer === "") {
+                alert("Wpisz coś, Kochanie! 😘");
+                return;
+            }
+
+            
+            document.getElementById('input-randka').value = typedAnswer;
+
+            
+            setTimeout(() => {
+                document.getElementById('q1').classList.remove('active');
+                document.getElementById('q2').classList.add('active');
+            }, 500);
+        }
+
         function selectAnswer(clickedButton, questionNum, textValue) {
             const currentQuestion = document.getElementById(`q${questionNum}`);
             const buttons = currentQuestion.querySelectorAll('.btn-answer');
             
-            // 1. Zablokuj wszystkie przyciski w tym pytaniu i podświetl ten kliknięty
             buttons.forEach(btn => btn.disabled = true);
             clickedButton.classList.add('selected');
 
-            // 2. Przypisz wartość do odpowiedniego pola ukrytego formularza
             if (questionNum === 1) {
                 document.getElementById('input-randka').value = textValue;
             } else if (questionNum === 2) {
@@ -303,7 +341,6 @@
                 document.getElementById('input-kocha').value = textValue;
             }
 
-            // 3. Odczekaj sekundę i przejdź dalej lub wyślij
             setTimeout(() => {
                 currentQuestion.classList.remove('active');
                 
@@ -327,12 +364,16 @@
                     'Accept': 'application/json'
                 }
             }).then(response => {
-                document.getElementById('quiz-body').style.display = 'none';
-                document.getElementById('quiz-result').style.display = 'block';
+                
+                setTimeout(() => {
+                    document.getElementById('quiz-body').style.display = 'none';
+                    document.getElementById('quiz-result').style.display = 'block';
+                }, 3000);
             }).catch(error => {
-                // W razie braku sieci i tak pokazujemy sukces, żeby nie psuć zabawy
-                document.getElementById('quiz-body').style.display = 'none';
-                document.getElementById('quiz-result').style.display = 'block';
+                setTimeout(() => {
+                    document.getElementById('quiz-body').style.display = 'none';
+                    document.getElementById('quiz-result').style.display = 'block';
+                }, 3000);
             });
         }
     </script>
